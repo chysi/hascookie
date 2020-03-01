@@ -1,13 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Web.Spock
-import Web.Spock.Config
-
-import Control.Monad.Trans
-import Data.IORef
-import Data.Monoid
+import           Control.Monad.Trans (liftIO)
+import           Data.IORef (IORef, atomicModifyIORef', newIORef)
 import qualified Data.Text as T
+import           Web.Spock ((<//>))
+import qualified Web.Spock as Spock
+import qualified Web.Spock.Config as SC
 
 data MySession = EmptySession
 data MyAppState = DummyAppState (IORef Int)
@@ -15,14 +14,14 @@ data MyAppState = DummyAppState (IORef Int)
 main :: IO ()
 main =
     do ref <- newIORef 0
-       spockCfg <- defaultSpockCfg EmptySession PCNoDatabase (DummyAppState ref)
-       runSpock 8080 (spock spockCfg app)
+       spockCfg <- SC.defaultSpockCfg EmptySession SC.PCNoDatabase (DummyAppState ref)
+       Spock.runSpock 8080 (Spock.spock spockCfg app)
 
-app :: SpockM () MySession MyAppState ()
+app :: Spock.SpockM () MySession MyAppState ()
 app =
-    do get root $
-           text "Hello World!"
-       get ("hello" <//> var) $ \name ->
-           do (DummyAppState ref) <- getState
+    do Spock.get Spock.root $
+           Spock.text "Hello World!"
+       Spock.get ("hello" <//> Spock.var) $ \name ->
+           do (DummyAppState ref) <- Spock.getState
               visitorNumber <- liftIO $ atomicModifyIORef' ref $ \i -> (i+1, i+1)
-              text ("Hello " <> name <> ", you are visitor number " <> T.pack (show visitorNumber))
+              Spock.text ("Hello " <> name <> ", you are visitor number " <> T.pack (show visitorNumber))
