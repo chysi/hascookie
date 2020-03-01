@@ -1,0 +1,28 @@
+cabal-version: >=1.10
+name:    hascookie
+version: 0.1.0.0
+-- synopsis:
+-- description:
+-- bug-reports:
+-- license:
+-- license-file:        LICENSE
+author:              2mol
+maintainer:          2mol@users.noreply.github.com
+-- copyright:
+-- category:
+build-type:          Simple
+extra-source-files:  CHANGELOG.md
+
+executable hascookie
+  main-is:             Main.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends:
+      base >=4.12 && <4.13
+    , text
+    , Spock >=0.13
+    , Spock-core >=0.13
+    , reroute
+    , mtl
+  -- hs-source-dirs:
+  default-language:    Haskell2010
