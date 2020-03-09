@@ -1,4 +1,4 @@
 cradle:
   cabal:
     - path: "./"
-      component: "hascookie:exe:hascookie"
+      component: "hascookie"
