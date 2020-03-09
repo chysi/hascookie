@@ -20,7 +20,8 @@ executable hascookie
       Types
   -- other-extensions:
   build-depends:
-      base >=4.12 && <4.14
+      base >=4.12 && <5
+    , Cabal >=3.0.0.0
     , aeson >= 1.4
     , cryptonite >= 0.25
     , http-conduit >=2.3
