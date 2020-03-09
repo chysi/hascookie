@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Types where
 
-import qualified Data.Aeson as A
+-- import qualified Data.Aeson as A
 import qualified Data.Text as T
 import qualified Data.List as List
 import Text.Read (readMaybe)

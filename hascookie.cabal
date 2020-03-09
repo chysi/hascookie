@@ -1,29 +1,31 @@
-cabal-version: >=1.10
+cabal-version: 2.2
+
 name:    hascookie
 version: 0.1.0.0
--- synopsis:
--- description:
--- bug-reports:
--- license:
--- license-file:        LICENSE
 author:              2mol
 maintainer:          2mol@users.noreply.github.com
--- copyright:
--- category:
 build-type:          Simple
-extra-source-files:  CHANGELOG.md
+
+common common-exe
+  ghc-options:
+    -threaded -rtsopts
+    -- -threaded -O2 -rtsopts -with-rtsopts=-N
+    -Wall -Wcompat -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wredundant-constraints
 
 executable hascookie
   hs-source-dirs:      src
   main-is:             Main.hs
+  exposed-modules:     Main
   other-modules:
-      Types
-  -- other-extensions:
+    Types
+    UI
+    DB
   build-depends:
       base >=4.12 && <5
     , Cabal >=3.0.0.0
-    , aeson >= 1.4
-    , cryptonite >= 0.25
+    , aeson >=1.4
+    , cryptonite >=0.25
     , http-conduit >=2.3
     , http-types >=0.12
     , text
@@ -31,5 +33,5 @@ executable hascookie
     , Spock-core >=0.13
     , reroute
     , mtl
-  -- hs-source-dirs:
+    , neat-interpolation
   default-language:    Haskell2010
