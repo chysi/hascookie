@@ -14,11 +14,17 @@ build-type:          Simple
 extra-source-files:  CHANGELOG.md
 
 executable hascookie
+  hs-source-dirs:      src
   main-is:             Main.hs
-  -- other-modules:
+  other-modules:
+      Types
   -- other-extensions:
   build-depends:
-      base >=4.12 && <4.13
+      base >=4.12 && <4.14
+    , aeson >= 1.4
+    , cryptonite >= 0.25
+    , http-conduit >=2.3
+    , http-types >=0.12
     , text
     , Spock >=0.13
     , Spock-core >=0.13
