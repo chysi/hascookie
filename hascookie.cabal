@@ -34,4 +34,5 @@ executable hascookie
     , reroute
     , mtl
     , neat-interpolation
+    , sqlite-simple
   default-language:    Haskell2010

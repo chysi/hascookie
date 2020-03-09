@@ -14,6 +14,7 @@ import Types
 data MySession = EmptySession
 newtype MyAppState = DummyAppState (IORef Int)
 
+
 main :: IO ()
 main =
     do ref <- newIORef 0
@@ -23,7 +24,7 @@ main =
 app :: Spock.SpockM () MySession MyAppState ()
 app =
     do Spock.get Spock.root $
-           Spock.text "Hello World!"
+           Spock.html "<h1 style=\"color:red\">Hello World!</h1>"
 
        Spock.post "icanhascookie" $ do
          params <- Spock.paramsPost
