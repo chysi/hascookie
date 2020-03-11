@@ -1,0 +1,4 @@
+(A) set up database init @juri
+comment code extensively
+serve simple index.html @juri
+x basic sqlite DB module

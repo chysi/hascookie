@@ -1,1 +1,1 @@
---command="cabal repl" --restart=hascookie.cabal
+--command="cabal repl" --restart=hascookie.cabal --test "Main.main"
