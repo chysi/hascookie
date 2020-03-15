@@ -3,10 +3,8 @@
 module DB where
 
 import           Control.Applicative ()
-import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
--- import           Database.SQLite.Simple (NamedParam(..))
 import qualified Database.SQLite.Simple as Sql
+-- import           Database.SQLite.Simple (NamedParam(..))
 -- import           Database.SQLite.Simple.FromRow (FromRow)
 
 -- data TestField = TestField Int T.Text deriving (Show)
@@ -35,8 +33,8 @@ import qualified Database.SQLite.Simple as Sql
 init :: String -> IO Sql.Connection
 init dbFileName = do
     conn <- Sql.open dbFileName
-    (ver : _ ) : _ <- Sql.query_ conn "select sqlite_version()" :: IO [[T.Text]]
-    TIO.putStrLn $ "sqlite version " <> ver
+    (ver : _ ) : _ <- Sql.query_ conn "select sqlite_version()" :: IO [[String]]
+    putStrLn $ "sqlite version " <> ver
     Sql.execute_ conn "create table if not exists orders (id integer primary key, amount integer)"
     pure conn
 
