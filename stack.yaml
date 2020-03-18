@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-13.19
+resolver: lts-14.27
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -47,6 +47,7 @@ extra-deps:
   - stm-containers-0.2.16
   - focus-0.1.5.2
   - primitive-0.6.4.0
+  - Cabal-3.0.0.0
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
