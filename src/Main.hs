@@ -37,10 +37,10 @@ main = do
 
 app :: Spock.SpockM ServerDBConn ServerSession ServerState ()
 app = do
-    Spock.middleware $ Static.staticPolicy (Static.addBase "static")
+    Spock.middleware $ Static.staticPolicy (Static.addBase "site")
     Spock.get "/" $ do
         -- liftIO $ putStrLn ">> main page requested"
-        Spock.file "text/html" "static/index.html"
+        Spock.file "text/html" "site/index.html"
 
     Spock.get "hello-app" $ do
         Spock.text "I'm alive, thanks for asking!"
