@@ -30,7 +30,7 @@ executable hascookie
     , http-types >=0.12
     , text
     , Spock >=0.13
-    -- , Spock-core >=0.13
+    , wai-middleware-static
     , reroute
     , mtl
     -- , neat-interpolation

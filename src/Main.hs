@@ -9,10 +9,11 @@ import qualified Data.Text.IO as TIO
 import           Database.SQLite.Simple (Connection)
 import qualified DB
 import qualified Network.HTTP.Types as Http
--- import           Types
+import qualified Network.Wai.Middleware.Static as Static
 import           Web.Spock ((<//>))
 import qualified Web.Spock as Spock
 import qualified Web.Spock.Config as SC
+-- import           Types
 
 
 type ServerDBConn  = ()
@@ -35,15 +36,17 @@ main = do
 
 app :: T.Text -> Server ()
 app frontPage = do
-    Spock.get Spock.root $ do
-        liftIO $ putStrLn ">> main page requested"
+    Spock.middleware $ Static.staticPolicy (Static.addBase "/site/")
+    Spock.get "/" $ do
+        -- liftIO $ putStrLn ">> main page requested"
         Spock.html frontPage
 
-    Spock.get "heartbeat" $ do
-        Spock.setStatus Http.status200
+    Spock.get "hello-app" $ do
+        Spock.text "I'm alive, thanks for asking!"
 
     Spock.post "icanhascookie" $ do
         liftIO $ putStrLn ">> order posted"
+        -- TODO: implement db saving
         -- params <- Spock.paramsPost
         -- let maybeOrderData = parseOrderBody params
         if False
@@ -57,5 +60,5 @@ app frontPage = do
 
     Spock.get ("orderstatus" <//> Spock.var) $ \orderId -> do
         liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
-        -- TODO
+        -- TODO: implement db call
         Spock.setStatus Http.status501
