@@ -4,12 +4,12 @@ steps:
       top_level_patterns: false
       records: false
   - imports:
-      # align: none
-      list_align: after_alias
+      align: none
+      list_align: with_module_name
       pad_module_names: false
       long_list_align: new_line_multiline
-      empty_list_align: right_after
-      list_padding: 2
+      empty_list_align: inherit
+      list_padding: 7 # length "import "
       separate_lists: false
       space_surround: false
   - language_pragmas:
@@ -18,4 +18,3 @@ steps:
       remove_redundant: true
   - trailing_whitespace: {}
 newline: native
-

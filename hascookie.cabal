@@ -19,20 +19,19 @@ executable hascookie
   exposed-modules:     Main
   other-modules:
     Types
-    UI
     DB
   build-depends:
       base >=4.12 && <5
     , Cabal >=3.0.0.0
-    , aeson >=1.4
-    , cryptonite >=0.25
-    , http-conduit >=2.3
+    -- , aeson >=1.4
+    -- , cryptonite >=0.25
+    -- , http-conduit >=2.3
     , http-types >=0.12
     , text
     , Spock >=0.13
-    , Spock-core >=0.13
+    , wai-middleware-static
     , reroute
     , mtl
-    , neat-interpolation
+    -- , neat-interpolation
     , sqlite-simple
   default-language:    Haskell2010

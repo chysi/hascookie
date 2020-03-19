@@ -1,58 +1,65 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- {-# LANGUAGE NamedFieldPuns #-}
 
 module Main where
 
--- import           Data.IORef (IORef, atomicModifyIORef', newIORef)
-import           Control.Monad.Trans (liftIO)
-import qualified Data.Text as T
-import           Database.SQLite.Simple (Connection)
-import qualified DB
+
+import Control.Monad.Trans (liftIO)
+-- import qualified Data.Text as T
+-- import qualified Data.Text.IO as TIO
+import qualified Database.SQLite.Simple
 import qualified Network.HTTP.Types as Http
-import           Types
-import           Web.Spock ((<//>))
+import qualified Network.Wai.Middleware.Static as Static
+import Web.Spock ((<//>))
 import qualified Web.Spock as Spock
 import qualified Web.Spock.Config as SC
 
+import qualified DB
+-- import Types
 
-type ServerConn    = ()
+
+type ServerDBConn  = ()
+
 data ServerSession = ServerSession
-data ServerState   = ServerState
-    { dbConnection :: Connection
-    }
 
-type Server a = Spock.SpockM ServerConn ServerSession ServerState a
+data ServerState   = ServerState
+    { dbConnection :: Database.SQLite.Simple.Connection
+    }
 
 
 main :: IO ()
 main = do
-    -- ref <- newIORef 0
     dbConnection <- DB.init "orders.db"
-    -- DB.addOrder dbConnection 123
     let serverState = ServerState { dbConnection = dbConnection }
     spockCfg <- SC.defaultSpockCfg ServerSession SC.PCNoDatabase serverState
-    Spock.runSpock 8080 (Spock.spock spockCfg app)
+    Spock.runSpock 8080 $ Spock.spock spockCfg app
 
 
-app :: Server ()
+app :: Spock.SpockM ServerDBConn ServerSession ServerState ()
 app = do
-    Spock.get Spock.root $
-        Spock.html "<h1 style=\"color:red\">Hello World!</h1>"
+    Spock.middleware $ Static.staticPolicy (Static.addBase "site")
+    Spock.get "/" $ do
+        -- liftIO $ putStrLn ">> main page requested"
+        Spock.file "text/html" "site/index.html"
+
+    Spock.get "hello-app" $ do
+        Spock.text "I'm alive, thanks for asking!"
 
     Spock.post "icanhascookie" $ do
-        params <- Spock.paramsPost
-        let maybeOrderData = parseOrderBody params
+        liftIO $ putStrLn ">> order posted"
+        -- TODO: implement db saving
+        -- params <- Spock.paramsPost
+        -- let maybeOrderData = parseOrderBody params
         if False
             then do
-                (ServerState dbConnection) <- Spock.getState
+                ServerState { dbConnection = dbConnection } <- Spock.getState
                 liftIO $ DB.addOrder dbConnection 12345
-            else pure ()
-        Spock.text $ maybe "Invalid form" (T.pack . show) maybeOrderData
+                Spock.setStatus Http.status200
+            else
+                Spock.setStatus Http.status500
+        -- Spock.text $ maybe "Invalid form" (T.pack . show) maybeOrderData
 
-    Spock.post "orderstatus" $ do
+    Spock.get ("orderstatus" <//> Spock.var) $ \orderId -> do
+        liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
+        -- TODO: implement db call
         Spock.setStatus Http.status501
-
-    Spock.get ("hello" <//> Spock.var) $ \name -> do
-        -- (DummyAppState ref) <- Spock.getState
-        -- visitorNumber <- liftIO $ atomicModifyIORef' ref $ \i -> (i+1, i+1)
-        -- Spock.text ("Hello " <> name <> ", you are visitor number " <> T.pack (show visitorNumber))
-        Spock.text ("Hello " <> name)
