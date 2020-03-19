@@ -19,7 +19,6 @@ executable hascookie
   exposed-modules:     Main
   other-modules:
     Types
-    UI
     DB
   build-depends:
       base >=4.12 && <5

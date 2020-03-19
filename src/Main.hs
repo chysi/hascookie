@@ -1,28 +1,30 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- {-# LANGUAGE NamedFieldPuns #-}
 
 module Main where
 
 
-import           Control.Monad.Trans (liftIO)
-import qualified Data.Text as T
-import qualified Data.Text.IO as TIO
-import           Database.SQLite.Simple (Connection)
-import qualified DB
+import Control.Monad.Trans (liftIO)
+-- import qualified Data.Text as T
+-- import qualified Data.Text.IO as TIO
+import qualified Database.SQLite.Simple
 import qualified Network.HTTP.Types as Http
 import qualified Network.Wai.Middleware.Static as Static
-import           Web.Spock ((<//>))
+import Web.Spock ((<//>))
 import qualified Web.Spock as Spock
 import qualified Web.Spock.Config as SC
--- import           Types
+
+import qualified DB
+-- import Types
 
 
 type ServerDBConn  = ()
-data ServerSession = ServerSession
-data ServerState   = ServerState
-    { dbConnection :: Connection
-    }
 
-type Server a = Spock.SpockM ServerDBConn ServerSession ServerState a
+data ServerSession = ServerSession
+
+data ServerState   = ServerState
+    { dbConnection :: Database.SQLite.Simple.Connection
+    }
 
 
 main :: IO ()
@@ -30,16 +32,15 @@ main = do
     dbConnection <- DB.init "orders.db"
     let serverState = ServerState { dbConnection = dbConnection }
     spockCfg <- SC.defaultSpockCfg ServerSession SC.PCNoDatabase serverState
-    frontPage <- TIO.readFile "site/index.html"
-    Spock.runSpock 8080 $ Spock.spock spockCfg (app frontPage)
+    Spock.runSpock 8080 $ Spock.spock spockCfg app
 
 
-app :: T.Text -> Server ()
-app frontPage = do
-    Spock.middleware $ Static.staticPolicy (Static.addBase "/site/")
+app :: Spock.SpockM ServerDBConn ServerSession ServerState ()
+app = do
+    Spock.middleware $ Static.staticPolicy (Static.addBase "static")
     Spock.get "/" $ do
         -- liftIO $ putStrLn ">> main page requested"
-        Spock.html frontPage
+        Spock.file "text/html" "static/index.html"
 
     Spock.get "hello-app" $ do
         Spock.text "I'm alive, thanks for asking!"
@@ -51,7 +52,7 @@ app frontPage = do
         -- let maybeOrderData = parseOrderBody params
         if False
             then do
-                (ServerState dbConnection) <- Spock.getState
+                ServerState { dbConnection = dbConnection } <- Spock.getState
                 liftIO $ DB.addOrder dbConnection 12345
                 Spock.setStatus Http.status200
             else
