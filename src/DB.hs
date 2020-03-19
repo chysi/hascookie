@@ -38,6 +38,7 @@ init dbFileName = do
     Sql.execute_ conn "create table if not exists orders (id integer primary key, amount integer)"
     pure conn
 
+
 addOrder :: Sql.Connection -> Int -> IO ()
 addOrder conn amount = do
     Sql.execute conn "insert into orders (amount) values (?)" (Sql.Only amount)

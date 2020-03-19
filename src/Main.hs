@@ -38,6 +38,9 @@ app = do
         liftIO $ putStrLn ">> getting main page"
         Spock.html "<h1 style=\"color:red\">Hello World!</h1>"
 
+    Spock.get "heartbeat" $ do
+        Spock.setStatus Http.status200
+
     Spock.post "icanhascookie" $ do
         liftIO $ putStrLn ">> posting order"
         params <- Spock.paramsPost
