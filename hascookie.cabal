@@ -28,7 +28,8 @@ executable hascookie
     -- , http-conduit >=2.3
     , http-types >=0.12
     , text
-    , Spock >=0.13
+    , scotty
+    , wai-extra
     , wai-middleware-static
     , reroute
     , mtl

@@ -1,65 +1,48 @@
 {-# LANGUAGE OverloadedStrings #-}
--- {-# LANGUAGE NamedFieldPuns #-}
 
 module Main where
 
 
 import Control.Monad.Trans (liftIO)
--- import qualified Data.Text as T
--- import qualified Data.Text.IO as TIO
-import qualified Database.SQLite.Simple
 import qualified Network.HTTP.Types as Http
+import Network.Wai.Middleware.RequestLogger (logStdout)
 import qualified Network.Wai.Middleware.Static as Static
-import Web.Spock ((<//>))
-import qualified Web.Spock as Spock
-import qualified Web.Spock.Config as SC
+import qualified Web.Scotty as Scotty
 
 import qualified DB
 -- import Types
 
 
-type ServerDBConn  = ()
-
-data ServerSession = ServerSession
-
-data ServerState   = ServerState
-    { dbConnection :: Database.SQLite.Simple.Connection
-    }
-
-
 main :: IO ()
 main = do
     dbConnection <- DB.init "orders.db"
-    let serverState = ServerState { dbConnection = dbConnection }
-    spockCfg <- SC.defaultSpockCfg ServerSession SC.PCNoDatabase serverState
-    Spock.runSpock 8080 $ Spock.spock spockCfg app
 
+    Scotty.scotty 8080 $ do
+        Scotty.middleware logStdout
+        Scotty.middleware $ Static.staticPolicy (Static.addBase "site")
+        Scotty.get "/" $ do
+            -- liftIO $ putStrLn ">> main page requested"
+            Scotty.file "site/index.html"
 
-app :: Spock.SpockM ServerDBConn ServerSession ServerState ()
-app = do
-    Spock.middleware $ Static.staticPolicy (Static.addBase "site")
-    Spock.get "/" $ do
-        -- liftIO $ putStrLn ">> main page requested"
-        Spock.file "text/html" "site/index.html"
+        Scotty.get "hello-app" $ do
+            Scotty.text "I'm alive, thanks for asking!"
 
-    Spock.get "hello-app" $ do
-        Spock.text "I'm alive, thanks for asking!"
+        Scotty.post "icanhascookie" $ do
+            liftIO $ putStrLn ">> order posted"
+            -- TODO: implement db saving
+            -- params <- Scotty.paramsPost
+            -- let maybeOrderData = parseOrderBody params
+            if False
+                then do
+                    -- ServerState { dbConnection = dbConnection } <- Scotty.getState
+                    liftIO $ DB.addOrder dbConnection 12345
+                    Scotty.status Http.status200
+                else
+                    Scotty.status Http.status500
+            -- Scotty.text $ maybe "Invalid form" (T.pack . show) maybeOrderData
 
-    Spock.post "icanhascookie" $ do
-        liftIO $ putStrLn ">> order posted"
-        -- TODO: implement db saving
-        -- params <- Spock.paramsPost
-        -- let maybeOrderData = parseOrderBody params
-        if False
-            then do
-                ServerState { dbConnection = dbConnection } <- Spock.getState
-                liftIO $ DB.addOrder dbConnection 12345
-                Spock.setStatus Http.status200
-            else
-                Spock.setStatus Http.status500
-        -- Spock.text $ maybe "Invalid form" (T.pack . show) maybeOrderData
-
-    Spock.get ("orderstatus" <//> Spock.var) $ \orderId -> do
-        liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
-        -- TODO: implement db call
-        Spock.setStatus Http.status501
+        Scotty.get "orderstatus/:order_id" $ do
+            orderId <- Scotty.param "order_id" :: Scotty.ActionM Int
+            liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
+            -- TODO: implement db call
+            Scotty.status Http.status501
