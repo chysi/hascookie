@@ -10,10 +10,78 @@
   <link rel="stylesheet" href="tailwind.min.css" />
 </head>
 
-<body>
-  <div>
-    <div class="text-purple-500 font-bold text-2xl">
-      Zurich Cookie delivery taskforce
+<body class="bg-gray-300">
+  <div class="flex flex-col items-center">
+    <div class="rounded bg-white shadow py-4 m-4">
+      <div class="text-pink-600 font-bold text-4xl px-6">
+        Zurich Cookies
+      </div>
+      <div class="text-pink-300 font-bold text-3xl -mt-4 px-6">
+        delivery taskforce.
+      </div>
+      <div class="mt-4">
+        <div class="max-w-xl bg-gray-900 text-white py-1 px-3">
+          Have you ever smelled a cookie <span class="font-bold">MADE BY AN INVESTMENT BANKER?</span>
+        </div>
+        <div class="max-w-xl px-3 py-2">
+          Have you ever consumed the RAW ESSENCE of <span class="font-bold">DELICIOUSNESS?</span>
+        </div>
+        <div class="max-w-xl bg-gray-900 text-white py-1 px-3">
+          Have you ever had a cookie SO GOOD that you tried to <span class="font-bold">LICK THE CRUMBS out of the
+            CARPET?</span>
+        </div>
+        <div class="max-w-xl px-3 py-2 mt-4">
+          ... well, have you?
+        </div>
+        <div class="max-w-xl px-3 py-1 mt-4 bg-red-600">
+          ⇨ You clearly <span class="font-bold text-white">NEED</span> a Zurich Cookie.
+        </div>
+      </div>
+      <div class="p-6">
+        <div class="font-black text-2xl">
+          ORDER IMMEDIATELY!
+        </div>
+        <div class="border border-black border-dashed -mt-2 bg-white px-2 py-1">
+          <div class="font-bold mt-2">
+            When?
+          </div>
+          <div class="inline-block relative">
+            <select
+              class="appearance-none pr-8 w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline">
+              <option>As ASAP as possible</option>
+              <option>Today 13:00</option>
+              <option>Today 13:30</option>
+              <option>Today 14:00</option>
+              <option>Today 14:30</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+            </div>
+          </div>
+
+          <div class="font-bold mt-2">
+            How many?
+          </div>
+          <input
+            class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
+            type="number" value="4">
+
+          <div class="font-bold mt-2">
+            Where to?
+          </div>
+          <input
+            class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
+            placeholder="Your address here">
+
+          <div class="flex w-full justify-end mt-2">
+            <button
+              class="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </body>
