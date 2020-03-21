@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 -- {-# LANGUAGE NamedFieldPuns #-}
 
 module Main where
@@ -15,7 +16,7 @@ import qualified Web.Spock as Spock
 import qualified Web.Spock.Config as SC
 
 import qualified DB
--- import Types
+import qualified Types as T
 
 
 type ServerDBConn  = ()
@@ -38,26 +39,21 @@ main = do
 app :: Spock.SpockM ServerDBConn ServerSession ServerState ()
 app = do
     Spock.middleware $ Static.staticPolicy (Static.addBase "site")
-    Spock.get "/" $ do
+    Spock.get "/" $
         -- liftIO $ putStrLn ">> main page requested"
         Spock.file "text/html" "site/index.html"
 
-    Spock.get "hello-app" $ do
+    Spock.get "hello-app" $
         Spock.text "I'm alive, thanks for asking!"
 
     Spock.post "icanhascookie" $ do
         liftIO $ putStrLn ">> order posted"
         -- TODO: implement db saving
-        -- params <- Spock.paramsPost
-        -- let maybeOrderData = parseOrderBody params
-        if False
-            then do
-                ServerState { dbConnection = dbConnection } <- Spock.getState
-                liftIO $ DB.addOrder dbConnection 12345
-                Spock.setStatus Http.status200
-            else
-                Spock.setStatus Http.status500
-        -- Spock.text $ maybe "Invalid form" (T.pack . show) maybeOrderData
+        (params :: T.OrderBody) <- Spock.jsonBody'
+        ServerState { dbConnection = dbConnection } <- Spock.getState
+        liftIO $ DB.addOrder dbConnection params
+        Spock.setStatus Http.status200
+        Spock.text "Order submitted"
 
     Spock.get ("orderstatus" <//> Spock.var) $ \orderId -> do
         liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
