@@ -22,21 +22,19 @@ main = do
         Scotty.scotty 8080 $ do
                 Scotty.middleware RequestLogger.logStdoutDev
                 Scotty.middleware $ Static.staticPolicy (Static.addBase "site")
-                Scotty.get "/" $ do
+                Scotty.get "/" $
                     -- liftIO $ putStrLn ">> main page requested"
                         Scotty.file "site/index.html"
 
-                Scotty.get "/hello-app" $ do
+                Scotty.get "/hello-app" $
                         Scotty.text "I'm alive, thanks for asking!"
 
 
                 Scotty.post "icanhascookie" $ do
                         liftIO $ putStrLn ">> order posted"
                         (params :: T.OrderBody) <- Scotty.jsonData
-                        ServerState { dbConnection = dbConnection } <-
-                                Scotty.getState
                         liftIO $ DB.addOrder dbConnection params
-                        Scotty.setStatus Http.status200
+                        Scotty.status Http.status200
                         Scotty.text "Order submitted"
 
                 Scotty.get "/orderstatus/:order_id" $ do
