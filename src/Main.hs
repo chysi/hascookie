@@ -37,7 +37,6 @@ main = do
 
         Scotty.get "/orderstatus/:order_id" $ do
             orderId <- Scotty.param "order_id" :: Scotty.ActionM Int
-            liftIO $ putStrLn $ ">> status for order nr. " <> show
-                    (orderId :: Int)
+            liftIO $ putStrLn $ ">> status for order nr. " <> show orderId
             -- TODO: implement db call
             Scotty.status Http.status501

@@ -1,4 +1,5 @@
-(A) set up database init @juri
-create index.html, serve @juri
+x set up database init @juri
+x create index.html, serve @juri
 x basic sqlite DB module
 set up slack hook @cazim
+set up skeleton repo @juri
