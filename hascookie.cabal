@@ -23,7 +23,7 @@ executable hascookie
   build-depends:
       base >=4.12 && <5
     , Cabal >=3.0.0.0
-    -- , aeson >=1.4
+    , aeson >=1.4
     -- , cryptonite >=0.25
     -- , http-conduit >=2.3
     , http-types >=0.12
