@@ -5,7 +5,7 @@ module Main where
 
 import Control.Monad.Trans (liftIO)
 import qualified Network.HTTP.Types as Http
-import Network.Wai.Middleware.RequestLogger (logStdout)
+import qualified Network.Wai.Middleware.RequestLogger as RequestLogger
 import qualified Network.Wai.Middleware.Static as Static
 import qualified Web.Scotty as Scotty
 
@@ -18,16 +18,16 @@ main = do
     dbConnection <- DB.init "orders.db"
 
     Scotty.scotty 8080 $ do
-        Scotty.middleware logStdout
+        Scotty.middleware RequestLogger.logStdoutDev
         Scotty.middleware $ Static.staticPolicy (Static.addBase "site")
         Scotty.get "/" $ do
             -- liftIO $ putStrLn ">> main page requested"
             Scotty.file "site/index.html"
 
-        Scotty.get "hello-app" $ do
+        Scotty.get "/hello-app" $ do
             Scotty.text "I'm alive, thanks for asking!"
 
-        Scotty.post "icanhascookie" $ do
+        Scotty.post "/icanhascookie" $ do
             liftIO $ putStrLn ">> order posted"
             -- TODO: implement db saving
             -- params <- Scotty.paramsPost
@@ -41,7 +41,7 @@ main = do
                     Scotty.status Http.status500
             -- Scotty.text $ maybe "Invalid form" (T.pack . show) maybeOrderData
 
-        Scotty.get "orderstatus/:order_id" $ do
+        Scotty.get "/orderstatus/:order_id" $ do
             orderId <- Scotty.param "order_id" :: Scotty.ActionM Int
             liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
             -- TODO: implement db call
