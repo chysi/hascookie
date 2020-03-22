@@ -35,6 +35,17 @@ main = do
             Scotty.status Http.status200
             Scotty.text "Order submitted"
 
+        Scotty.post "/icanhas" $ do
+            -- the form encoded version of ordering cookies
+            params <- Scotty.params
+            liftIO $ print params
+            -- liftIO $ DB.addOrder dbConnection params
+            -- Scotty.status Http.status200
+            -- Scotty.text "Order submitted"
+            Scotty.status Http.status501
+            -- Scotty.file "site/index.html"
+
+
         Scotty.get "/orderstatus/:order_id" $ do
             orderId <- Scotty.param "order_id" :: Scotty.ActionM Int
             liftIO $ putStrLn $ ">> status for order nr. " <> show orderId
