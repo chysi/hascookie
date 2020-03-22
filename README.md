@@ -23,6 +23,11 @@ The API exposes the following features:
 - saves info in db
 - sends info to slack/telegram
 
+## For the slack integration
+
+The slack integration expects the following environment variables to be defined:
+- HASCOOKIE_SLACK_CHANNEL_ID: the slack channel id (obtained from the API) of the channel to post notifications to
+- HASCOOKIE_SLACK_TOKEN: the oauth token for your slack workspace
 
 ## Meetup abstract
 
