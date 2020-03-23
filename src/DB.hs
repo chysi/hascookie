@@ -30,3 +30,14 @@ addOrder conn order =
         , T.address order :: Text.Text
         , T.deliveryTime order :: Text.Text
         )
+
+
+-- saveOrder :: Sql.Connection -> [(Text.Text)] -> IO ()
+-- saveOrder conn order =
+--     Sql.execute conn
+--         "insert into orders (amount, email, address, delivery_time) values (?, ?, ?, ?)"
+--         ( T.amount order :: Int
+--         , T.email order :: Text.Text
+--         , T.address order :: Text.Text
+--         , T.deliveryTime order :: Text.Text
+--         )
