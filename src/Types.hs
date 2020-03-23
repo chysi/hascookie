@@ -4,21 +4,21 @@
 module Types where
 
 import qualified Data.Aeson                    as A
-import qualified Data.Text                     as T
+import qualified Data.Text                     as Tx
 import qualified Data.List                     as List
 import           Text.Read                      ( readMaybe )
 import           GHC.Generics                   ( Generic )
 
 data Config = Config
-  { slackChannelId :: T.Text
-  , slackOauthToken :: T.Text
+  { slackChannelId :: Tx.Text
+  , slackOauthToken :: Tx.Text
   }
 
 data OrderBody = OrderBody
-  { email :: T.Text
-  , address :: T.Text
+  { email :: Tx.Text
+  , address :: Tx.Text
   , amount :: Int
-  , deliveryTime :: T.Text
+  , deliveryTime :: Tx.Text
   }
   deriving (Show, Eq, Ord, Generic)
 
@@ -30,30 +30,31 @@ instance A.ToJSON OrderBody where
   toEncoding = A.genericToEncoding customOptions
 
 data SlackMessagePayload = SlackMessagePayload
-  { channel :: T.Text
-  , text :: T.Text
+  { channel :: Tx.Text
+  , text :: Tx.Text
   }
   deriving (Show, Eq, Ord, Generic)
 
 instance A.ToJSON SlackMessagePayload where
   toEncoding = A.genericToEncoding customOptions
 
-data MessageBlock =
-  TextBlock T.Text
-  | ActionsBlock [MessageBlock]
-  | ButtonBlock T.Text
-
-parseConfig :: Maybe String -> Maybe String -> Either T.Text Config
+parseConfig :: Maybe String -> Maybe String -> Either Tx.Text Config
 parseConfig maybe_channel_id maybe_oauth_token = case maybe_channel_id of
   Nothing -> Left "Missing environment variable: HASCOOKIE_SLACK_CHANNEL_ID"
   Just channel_id -> case maybe_oauth_token of
     Nothing -> Left "Missing environment variable: HASCOOKIE_SLACK_TOKEN"
-    Just oauth_token -> Right $ Config (T.pack channel_id) (T.pack oauth_token)
+    Just oauth_token ->
+      Right $ Config (Tx.pack channel_id) (Tx.pack oauth_token)
 
--- parseOrderBody :: [(T.Text, T.Text)] -> Maybe OrderBody
+-- data MessageBlock =
+--   TextBlock Tx.Text
+--   | ActionsBlock [MessageBlock]
+--   | ButtonBlock Tx.Text
+
+-- parseOrderBody :: [(Tx.Text, T.Text)] -> Maybe OrderBody
 -- parseOrderBody params = case List.sortOn fst params of
 --   [("amount", amount), ("deliveryTime", deliveryTime), ("email", email), ("address", address)]
 --     -> do
---       parsedAmount <- readMaybe $ T.unpack amount
+--       parsedAmount <- readMaybe $ Tx.unpack amount
 --       return $ OrderBody email address parsedAmount deliveryTime
 --   _ -> Nothing
