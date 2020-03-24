@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
 
 import Control.Monad.Trans (liftIO)
 import qualified Data.Text as Tx
-import qualified Data.Text.IO as Tx
+import qualified Data.Text.IO as TIO
+import qualified Data.Text.Lazy as TL
 import qualified Network.HTTP.Types as Http
 import qualified Network.Wai.Middleware.RequestLogger as RequestLogger
 import qualified Network.Wai.Middleware.Static as Static
@@ -31,11 +31,12 @@ main = do
 
     -- maybeChannelId <- Env.lookupEnv "HASCOOKIE_SLACK_CHANNEL_ID"
     -- maybeAuthToken <- Env.lookupEnv "HASCOOKIE_SLACK_TOKEN"
+    -- let maybeConf = tupleMaybe (maybeChannelId, maybeAuthToken)
 
     maybeConfig <- envParseConfig
 
     case maybeConfig of
-        Left  err    -> Tx.putStrLn err
+        Left  err    -> TIO.putStrLn err
         Right config ->
             Scotty.scotty 8080 $ do
                 Scotty.middleware RequestLogger.logStdoutDev
@@ -47,22 +48,47 @@ main = do
                 Scotty.get "/hello-app" $
                     Scotty.text "I'm alive, thanks for asking!"
 
-                Scotty.post "/icanhascookie" $ do
-                    liftIO $ putStrLn ">> order posted"
-                    (params :: T.OrderBody) <- Scotty.jsonData
-                    liftIO $ DB.addOrder dbConnection params
+                Scotty.post "/icanhas" $ do
+                    params <- Scotty.params
+                    liftIO $ DB.saveOrder dbConnection (paramsToStrict params)
 
-                    slack_request_status <-
-                        liftIO $ Slack.makeSlackRequest config $
-                            Slack.generateMessage config params
-                    liftIO $ Tx.putStrLn
-                        $ ">> Slack request response: " <> slack_request_status
+                    -- slack_request_status <-
+                    --     liftIO $ Slack.makeSlackRequest config $
+                    --         Slack.generateMessage config params
+                    -- liftIO $ TIO.putStrLn
+                    --     $ ">> Slack response: " <> slack_request_status
                     -- TODO: check slack return message for success
                     -- Scotty.status Http.status200
-                    Scotty.html "<h1>Order submitted</h1>"
+                    Scotty.text "Order submitted"
+
+                -- Scotty.post "/icanhascookie" $ do
+                --     liftIO $ putStrLn ">> order posted"
+                --     params <- Scotty.jsonData :: Scotty.ActionM T.OrderBody
+                --     liftIO $ DB.addOrder dbConnection params
+
+                --     slack_request_status <-
+                --         liftIO $ Slack.makeSlackRequest' config $
+                --             Slack.generateMessage' config params
+                --     liftIO $ TIO.putStrLn
+                --         $ ">> Slack request response: " <> slack_request_status
+                --     -- TODO: check slack return message for success
+                --     -- Scotty.status Http.status200
+                --     Scotty.text "Order submitted"
 
                 Scotty.get "/orderstatus/:order_id" $ do
                     orderId <- Scotty.param "order_id" :: Scotty.ActionM Int
                     liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
                     -- TODO: implement db call
                     Scotty.status Http.status501
+
+
+tupleMaybe :: (Maybe a, Maybe b) -> Maybe (a, b)
+tupleMaybe (Just x, Just y) = Just (x, y)
+tupleMaybe _ = Nothing
+
+
+paramsToStrict :: [(TL.Text, TL.Text)] -> [(Tx.Text, Tx.Text)]
+paramsToStrict params =
+    map toStrict params
+    where
+        toStrict (a, b) = (TL.toStrict a, TL.toStrict b)

@@ -25,6 +25,7 @@ executable hascookie
       base >=4.12 && <5
     , bytestring >= 0.10
     , Cabal >=3.0.0.0
+    , containers
     , aeson >=1.4
     -- , cryptonite >=0.25
     , http-conduit >=2.3
