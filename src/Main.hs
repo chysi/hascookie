@@ -4,7 +4,7 @@ module Main where
 
 
 import Control.Monad.Trans (liftIO)
-import qualified Data.Text as Tx
+import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified Data.Text.Lazy as TL
 import qualified Network.HTTP.Types as Http
@@ -12,33 +12,20 @@ import qualified Network.Wai.Middleware.RequestLogger as RequestLogger
 import qualified Network.Wai.Middleware.Static as Static
 import qualified System.Environment as Env
 import qualified Web.Scotty as Scotty
+import qualified Data.Map.Strict as Map
 
 import qualified DB
 import qualified Slack
-import qualified Types as T
-
-
-envParseConfig :: IO (Either Tx.Text T.Config)
-envParseConfig = do
-    maybeChannelId  <- Env.lookupEnv "HASCOOKIE_SLACK_CHANNEL_ID"
-    maybeOauthToken <- Env.lookupEnv "HASCOOKIE_SLACK_TOKEN"
-    pure $ T.parseConfig maybeChannelId maybeOauthToken
-
-
 main :: IO ()
 main = do
     dbConnection <- DB.init "orders.db"
+    maybeAuthToken <- Env.lookupEnv "HASCOOKIE_SLACK_TOKEN"
+    maybeChannelId <- Env.lookupEnv "HASCOOKIE_SLACK_CHANNEL_ID"
 
-    -- maybeChannelId <- Env.lookupEnv "HASCOOKIE_SLACK_CHANNEL_ID"
-    -- maybeAuthToken <- Env.lookupEnv "HASCOOKIE_SLACK_TOKEN"
-    -- let maybeConf = tupleMaybe (maybeChannelId, maybeAuthToken)
-
-    maybeConfig <- envParseConfig
-
-    case maybeConfig of
-        Left  err    -> TIO.putStrLn err
-        Right config ->
+    case (maybeAuthToken, maybeChannelId) of
+        (Just authTokenText, Just channelIdText) ->
             Scotty.scotty 8080 $ do
+
                 Scotty.middleware RequestLogger.logStdoutDev
                 Scotty.middleware $ Static.staticPolicy (Static.addBase "site")
 
@@ -50,7 +37,16 @@ main = do
 
                 Scotty.post "/icanhas" $ do
                     params <- Scotty.params
-                    liftIO $ DB.saveOrder dbConnection (paramsToStrict params)
+                    let orderParamsMap = Map.fromList $ paramsToStrict params
+
+                    liftIO $ DB.saveOrder dbConnection orderParamsMap
+
+                    slackResponse <- liftIO $
+                        Slack.makeSlackRequest orderParamsMap
+                            (Slack.OAuthToken $ T.pack authTokenText)
+                            (Slack.Channel $ T.pack channelIdText)
+                    liftIO $ TIO.putStrLn
+                        $ ">> Slack response: " <> slackResponse
 
                     -- slack_request_status <-
                     --     liftIO $ Slack.makeSlackRequest config $
@@ -59,7 +55,7 @@ main = do
                     --     $ ">> Slack response: " <> slack_request_status
                     -- TODO: check slack return message for success
                     -- Scotty.status Http.status200
-                    Scotty.text "Order submitted"
+                    Scotty.html "<h1>Order submitted</h1> congratulations!!"
 
                 -- Scotty.post "/icanhascookie" $ do
                 --     liftIO $ putStrLn ">> order posted"
@@ -80,6 +76,12 @@ main = do
                     liftIO $ putStrLn $ ">> status for order nr. " <> show (orderId :: Int)
                     -- TODO: implement db call
                     Scotty.status Http.status501
+        _ ->
+            -- error
+            TIO.putStrLn
+                "Won't start without Slack integration, make sure\
+                \ HASCOOKIE_SLACK_TOKEN and HASCOOKIE_SLACK_CHANNEL_ID\
+                \ are set."
 
 
 tupleMaybe :: (Maybe a, Maybe b) -> Maybe (a, b)
@@ -87,7 +89,7 @@ tupleMaybe (Just x, Just y) = Just (x, y)
 tupleMaybe _ = Nothing
 
 
-paramsToStrict :: [(TL.Text, TL.Text)] -> [(Tx.Text, Tx.Text)]
+paramsToStrict :: [(TL.Text, TL.Text)] -> [(T.Text, T.Text)]
 paramsToStrict params =
     map toStrict params
     where

@@ -19,19 +19,8 @@ init dbFileName = do
     pure conn
 
 
--- addOrder :: Sql.Connection -> T.OrderBody -> IO ()
--- addOrder conn order =
---     Sql.execute conn
---         "insert into orders (amount, email, address, delivery_time) values (?, ?, ?, ?)"
---         ( T.amount order :: Int
---         , T.email order :: Text.Text
---         , T.address order :: Text.Text
---         , T.deliveryTime order :: Text.Text
---         )
-
-
-saveOrder :: Sql.Connection -> [(T.Text, T.Text)] -> IO ()
-saveOrder conn orderParameters =
+saveOrder :: Sql.Connection -> Map.Map T.Text T.Text -> IO ()
+saveOrder conn orderParamsMap =
     -- Showcasing the dumb, simple way to save the order info to the database.
     --
     -- We don't use a more structured type here, because SQLite does not have real
@@ -46,5 +35,4 @@ saveOrder conn orderParameters =
         , safeGet "delivery_time" orderParamsMap
         )
     where
-        orderParamsMap = Map.fromList orderParameters
         safeGet k dict = Map.findWithDefault "" k dict

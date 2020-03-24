@@ -18,7 +18,6 @@ executable hascookie
   main-is:             Main.hs
   exposed-modules:     Main
   other-modules:
-    Types
     DB
     Slack
   build-depends:

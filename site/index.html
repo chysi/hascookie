@@ -5,10 +5,10 @@
   <title>Zurich cookie delivery taskforce</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0" />
-  <!-- <link rel="shortcut icon" type="image/ico" href="favicon.ico"/> -->
+  <link rel="shortcut icon" type="image/ico" href="favicon.ico"/>
   <link href=data:, rel=icon />
   <link rel="stylesheet" href="tailwind.min.css" />
-  <script type="text/javascript" src="site.js" defer="defer"></script>
+  <!-- <script type="text/javascript" src="site.js" defer="defer"></script> -->
 </head>
 
 <body class="bg-gray-300">
@@ -43,50 +43,50 @@
           ORDER IMMEDIATELY!
         </div>
         <div class="border border-black border-dashed -mt-2 bg-white px-2 py-1">
-          <div class="font-bold mt-2">
-            When?
-          </div>
-          <div class="inline-block relative">
-            <select id="when"
-              class="appearance-none pr-8 w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline">
-              <option>As ASAP as possible</option>
-              <option>Today 13:00</option>
-              <option>Today 13:30</option>
-              <option>Today 14:00</option>
-              <option>Today 14:30</option>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-              ↓
+          <form action="/icanhas" method="POST">
+            <div class="font-bold mt-2">
+              When?
             </div>
-          </div>
+            <div class="inline-block relative">
+              <select id="when" name="delivery_time"
+                class="appearance-none pr-8 w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline">
+                <option>As ASAP as possible</option>
+                <option>Today 13:00</option>
+                <option>Today 13:30</option>
+                <option>Today 14:00</option>
+                <option>Today 14:30</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">↓</div>
+            </div>
 
-          <div class="font-bold mt-2">
-            How many?
-          </div>
-          <input id="how-many"
-            class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
-            type="number" value="4">
+            <div class="font-bold mt-2">
+              How many?
+            </div>
+            <input id="how-many" name="amount"
+              class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
+              type="number" value="4">
 
-          <div class="font-bold mt-2">
-            Where to?
-          </div>
-          <input id="where-to"
-            class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
-            placeholder="Your address here">
+            <div class="font-bold mt-2">
+              Where to?
+            </div>
+            <input id="where-to" name="address"
+              class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
+              placeholder="Your address here">
 
-          <div class="font-bold mt-2">
-            Your email so we can reach you
-          </div>
-          <input id="email" type="email"
-            class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
-            placeholder="you@somewhere.com">
+            <div class="font-bold mt-2">
+              Your email so we can reach you
+            </div>
+            <input id="email" type="email" name="email"
+              class="w-64 border border-gray-400 hover:border-gray-500 px-2 py-1 rounded shadow focus:outline-none focus:shadow-outline"
+              placeholder="you@somewhere.com">
 
-          <div class="flex w-full justify-end mt-2">
-            <button id="submit"
-              class="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
-              Continue
-            </button>
-          </div>
+            <div class="flex w-full justify-end mt-2">
+              <button id="submit" type="submit"
+                class="bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 border-b-4 border-red-700 hover:border-red-500 rounded">
+                Continue
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
