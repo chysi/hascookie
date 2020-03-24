@@ -1,25 +1,21 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Slack where
 
 import qualified Data.Aeson as A
 import Data.Function ((&))
-import qualified Data.Text as Tx
-import qualified Data.Text.Encoding as Tx
-import qualified Network.HTTP.Simple as HTTP
-import GHC.Generics (Generic)
 import qualified Data.Map.Strict as Map
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TextEncoding
+import GHC.Generics (Generic)
+import qualified Network.HTTP.Simple as HTTP
 
 
-makeSlackRequest
-    :: Map.Map Tx.Text Tx.Text
-    -> OAuthToken
-    -> Channel
-    -> IO Tx.Text
+makeSlackRequest :: Map.Map T.Text T.Text -> OAuthToken -> Channel -> IO T.Text
 makeSlackRequest orderParamsMap (OAuthToken token) (Channel channelId) = do
     baseRequest <- HTTP.parseRequest "https://slack.com/api/chat.postMessage"
-    let bearerToken = Tx.encodeUtf8 $ "Bearer " <> token
+    let bearerToken = TextEncoding.encodeUtf8 $ "Bearer " <> token
         request =
             baseRequest
                 & HTTP.setRequestBodyJSON payload
@@ -28,13 +24,13 @@ makeSlackRequest orderParamsMap (OAuthToken token) (Channel channelId) = do
     response <- HTTP.httpBS request
 
     HTTP.getResponseBody response
-        & Tx.decodeUtf8
+        & TextEncoding.decodeUtf8
         & return
     where
         payload :: MessagePayload
         payload = MessagePayload channelId messageBody
 
-        messageBody = Tx.intercalate " "
+        messageBody = T.intercalate " "
             [ safeGet "email" orderParamsMap
             , "ordered"
             , safeGet "amount" orderParamsMap
@@ -47,13 +43,13 @@ makeSlackRequest orderParamsMap (OAuthToken token) (Channel channelId) = do
         safeGet k dict = Map.findWithDefault "" k dict
 
 
-data OAuthToken = OAuthToken Tx.Text
+data OAuthToken = OAuthToken T.Text
 
-data Channel = Channel Tx.Text
+data Channel = Channel T.Text
 
 data MessagePayload = MessagePayload
-    { channel :: Tx.Text
-    , text :: Tx.Text
+    { channel :: T.Text
+    , text :: T.Text
     }
     deriving (Show, Eq, Ord, Generic)
 
@@ -64,36 +60,3 @@ encodingOptions =
 instance A.ToJSON MessagePayload where
     toEncoding =
         A.genericToEncoding encodingOptions
-
-
--- makeSlackRequest' :: T.Config -> T.SlackMessagePayload -> IO Tx.Text
--- makeSlackRequest' config payload = do
---     baseRequest <- HTTP.parseRequest "https://slack.com/api/chat.postMessage"
---     let bearerToken = Tx.encodeUtf8 $ "Bearer " <> T.slackOauthToken config
---         request =
---             baseRequest
---                 & HTTP.setRequestBodyJSON payload
---                 & HTTP.setRequestMethod "POST"
---                 & HTTP.addRequestHeader "Authorization" bearerToken
---     response <- HTTP.httpBS request
-
---     HTTP.getResponseBody response
---         & Tx.decodeUtf8
---         & return
-
-
--- generateMessage' :: T.Config -> T.OrderBody -> T.SlackMessagePayload
--- generateMessage' config order_body =
---     T.SlackMessagePayload
---         (T.slackChannelId config)
---         (makeMessage order_body)
---     where
---         makeMessage order_body = Tx.intercalate " "
---             [ T.email order_body
---             , "ordered"
---             , Tx.pack . show . T.amount $ order_body
---             , "cookies to"
---             , T.address order_body
---             , "for delivery"
---             , T.deliveryTime order_body
---             ]

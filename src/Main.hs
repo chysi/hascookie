@@ -4,6 +4,7 @@ module Main where
 
 
 import Control.Monad.Trans (liftIO)
+import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified Data.Text.Lazy as TL
@@ -12,10 +13,11 @@ import qualified Network.Wai.Middleware.RequestLogger as RequestLogger
 import qualified Network.Wai.Middleware.Static as Static
 import qualified System.Environment as Env
 import qualified Web.Scotty as Scotty
-import qualified Data.Map.Strict as Map
 
 import qualified DB
 import qualified Slack
+
+
 main :: IO ()
 main = do
     dbConnection <- DB.init "orders.db"
@@ -47,29 +49,9 @@ main = do
                             (Slack.Channel $ T.pack channelIdText)
                     liftIO $ TIO.putStrLn
                         $ ">> Slack response: " <> slackResponse
-
-                    -- slack_request_status <-
-                    --     liftIO $ Slack.makeSlackRequest config $
-                    --         Slack.generateMessage config params
-                    -- liftIO $ TIO.putStrLn
-                    --     $ ">> Slack response: " <> slack_request_status
                     -- TODO: check slack return message for success
-                    -- Scotty.status Http.status200
+
                     Scotty.html "<h1>Order submitted</h1> congratulations!!"
-
-                -- Scotty.post "/icanhascookie" $ do
-                --     liftIO $ putStrLn ">> order posted"
-                --     params <- Scotty.jsonData :: Scotty.ActionM T.OrderBody
-                --     liftIO $ DB.addOrder dbConnection params
-
-                --     slack_request_status <-
-                --         liftIO $ Slack.makeSlackRequest' config $
-                --             Slack.generateMessage' config params
-                --     liftIO $ TIO.putStrLn
-                --         $ ">> Slack request response: " <> slack_request_status
-                --     -- TODO: check slack return message for success
-                --     -- Scotty.status Http.status200
-                --     Scotty.text "Order submitted"
 
                 Scotty.get "/orderstatus/:order_id" $ do
                     orderId <- Scotty.param "order_id" :: Scotty.ActionM Int
@@ -77,16 +59,11 @@ main = do
                     -- TODO: implement db call
                     Scotty.status Http.status501
         _ ->
-            -- error
+            -- could also use `error`
             TIO.putStrLn
                 "Won't start without Slack integration, make sure\
                 \ HASCOOKIE_SLACK_TOKEN and HASCOOKIE_SLACK_CHANNEL_ID\
                 \ are set."
-
-
-tupleMaybe :: (Maybe a, Maybe b) -> Maybe (a, b)
-tupleMaybe (Just x, Just y) = Just (x, y)
-tupleMaybe _ = Nothing
 
 
 paramsToStrict :: [(TL.Text, TL.Text)] -> [(T.Text, T.Text)]
