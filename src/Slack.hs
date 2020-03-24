@@ -11,9 +11,9 @@ import qualified Types as T
 
 makeSlackRequest :: T.Config -> T.SlackMessagePayload -> IO Tx.Text
 makeSlackRequest config payload = do
-    let url          = "https://slack.com/api/chat.postMessage"
-        bearer_token = Tx.encodeUtf8 $ "Bearer " <> T.slackOauthToken config
-    base_request <- HTTP.parseRequest url
+    -- let url          = "https://slack.com/api/chat.postMessage"
+    let bearer_token = Tx.encodeUtf8 $ "Bearer " <> T.slackOauthToken config
+    base_request <- HTTP.parseRequest "https://slack.com/api/chat.postMessage"
     let request =
             base_request
                 & HTTP.setRequestBodyJSON payload

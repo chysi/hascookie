@@ -51,3 +51,6 @@ Second you will pair up with somebody, and build out the application. Cazim, Jur
 - https://github.com/soupi/gathering
 - https://github.com/scotty-web/scotty-starter
 - https://github.com/jeopard/haskell-checking-account
+- https://github.com/elm/package.elm-lang.org
+
+- https://slack.com/intl/en-ch/help/articles/115005265703-Create-a-bot-for-your-workspace
