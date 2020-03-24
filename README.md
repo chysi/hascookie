@@ -47,10 +47,12 @@ Second you will pair up with somebody, and build out the application. Cazim, Jur
 - https://gitlab.com/williamyaoh/haskell-web-stack
 - https://github.com/Gabriel439/simple-twitter
 - https://github.com/eckyputrady/haskell-scotty-realworld-example-app
-- https://haskell-at-work.com/episodes/2018-04-09-your-first-web-application-with-spock.html
 - https://github.com/soupi/gathering
 - https://github.com/scotty-web/scotty-starter
 - https://github.com/jeopard/haskell-checking-account
 - https://github.com/elm/package.elm-lang.org
 
 - https://slack.com/intl/en-ch/help/articles/115005265703-Create-a-bot-for-your-workspace
+
+- https://haskell-at-work.com/episodes/2018-04-09-your-first-web-application-with-spock.html
+- https://www.youtube.com/watch?v=mz5_HmLGRXc
