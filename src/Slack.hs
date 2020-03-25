@@ -13,7 +13,7 @@ import qualified Network.HTTP.Simple as HTTP
 
 
 makeSlackRequest :: Map.Map T.Text T.Text -> OAuthToken -> Channel -> IO T.Text
-makeSlackRequest orderParamsMap (OAuthToken token) (Channel channelId) = do
+makeSlackRequest orderParamsDict (OAuthToken token) (Channel channelId) = do
     baseRequest <- HTTP.parseRequest "https://slack.com/api/chat.postMessage"
     let bearerToken = TextEncoding.encodeUtf8 $ "Bearer " <> token
         request =
@@ -31,13 +31,13 @@ makeSlackRequest orderParamsMap (OAuthToken token) (Channel channelId) = do
         payload = MessagePayload channelId messageBody
 
         messageBody = T.intercalate " "
-            [ safeGet "email" orderParamsMap
+            [ safeGet "email" orderParamsDict
             , "ordered"
-            , safeGet "amount" orderParamsMap
+            , safeGet "amount" orderParamsDict
             , "cookies to"
-            , safeGet "address" orderParamsMap
+            , safeGet "address" orderParamsDict
             , "for delivery"
-            , safeGet "delivery_time" orderParamsMap
+            , safeGet "delivery_time" orderParamsDict
             ]
 
         safeGet k dict = Map.findWithDefault "" k dict

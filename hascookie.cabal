@@ -16,7 +16,6 @@ common common-exe
 executable hascookie
   hs-source-dirs:      src
   main-is:             Main.hs
-  exposed-modules:     Main
   other-modules:
     DB
     Slack

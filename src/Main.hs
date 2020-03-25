@@ -39,12 +39,12 @@ main = do
 
                 Scotty.post "/icanhas" $ do
                     params <- Scotty.params
-                    let orderParamsMap = Map.fromList $ paramsToStrict params
+                    let orderParamsDict = Map.fromList $ paramsToStrict params
 
-                    liftIO $ DB.saveOrder dbConnection orderParamsMap
+                    liftIO $ DB.saveOrder dbConnection orderParamsDict
 
                     slackResponse <- liftIO $
-                        Slack.makeSlackRequest orderParamsMap
+                        Slack.makeSlackRequest orderParamsDict
                             (Slack.OAuthToken $ T.pack authTokenText)
                             (Slack.Channel $ T.pack channelIdText)
                     liftIO $ TIO.putStrLn

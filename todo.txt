@@ -1,5 +1,6 @@
 x set up database init @juri
 x create index.html, serve @juri
 x basic sqlite DB module
-set up slack hook @cazim
+x set up slack hook @cazim
 set up skeleton repo @juri
+x send out reminder email @juri
